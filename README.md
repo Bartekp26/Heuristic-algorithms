@@ -6,4 +6,4 @@ Heuristic algorithms, presentation of their operation and comparison of their pe
 * Python (heuristic algorithms)
 * FastAPI (backend)
 * HTML, CSS (styling)
-* Javascript, React (dynamic graphs)
+* Javascript (dynamic graphs)
