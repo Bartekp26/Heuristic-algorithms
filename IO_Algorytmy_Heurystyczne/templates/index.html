@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorytmy Heurystyczne</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Algorytmy Heurystyczne</div>
+            <div class="nav-links">
+                <a href="#intro">Wprowadzenie</a>
+                <a href="#algorithms">Algorytmy</a>
+                <a href="#simulator">Wizualizacja</a>
+                <a href="#comparison">Porównanie</a>
+                <a href="#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="intro">
+        <div class="hero-content">
+            <h2>Algorytmy Heurystyczne</h2>
+            <p>Interaktywna platforma do eksploracji i wizualizacji zaawansowanych algorytmów optymalizacyjnych na różnych funkcjach wraz z przedstawieniem ich działania oraz porównaniem efektywności.</p>
+            <button class="cta-button" onclick="document.getElementById('simulator').scrollIntoView({behavior: 'smooth'})">
+                Rozpocznij ⬇
+            </button>
+        </div>
+    </section>
+
+    <section id="algorithms">
+        <div class="container">
+            <h2>Szczegóły algorytmów</h2>
+            <div class="algo-selector-section">
+                <div class="algo-toggle-container">
+                    <button class="algo-toggle-btn active" data-algo="0">Bat</button>
+                    <button class="algo-toggle-btn" data-algo="1">ABC</button>
+                    <button class="algo-toggle-btn" data-algo="2">Genetyczny</button>
+                    <div class="algo-toggle-indicator"></div>
+                </div>
+                
+                <div class="algo-description" id="algoDescription">
+                    <h3>Algorytm Bat</h3>
+                    <p>Algorytm Bat to zaawansowana metoda optymalizacji inspirowana naturalnym zachowaniem echa u nietoperzy. 
+                        Algorytm wykorzystuje echolokację do poszukiwania optymalnych rozwiązań w przestrzeni przeszukiwania. 
+                        Funkcjonuje poprzez symulację lotu nietoperzy, które emitują ultradźwięki i nasłuchują ich ech odbijających się od przeszkód.
+                        Algorytm jest szczególnie efektywny dla problemów optymalizacyjnych o wysokiej wymiarowości i charakteryzuje się bardzo szybką zbieżnością do optymalnych rozwiązań. 
+                        Doskonale nadaje się do rozwiązywania problemów szukania ekstremów funkcji wielomodalnych, gdzie tradycyjne metody ulegają utknięciu w optimach lokalnych. Algorytm łączy elementy zmienności losowej z deterministycznym kierowaniem poszukiwań. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="simulator">
+        <div class="container">
+            <h2>Wizualizacja działania algorytmu</h2>
+
+            <div class="simulator-box">
+                <h3>Parametry</h3>
+                
+                <div class="form-group">
+                    <label>Wybór Algorytmu:</label>
+                    <div class="algo-toggle-container">
+                        <button class="algo-toggle-btn active" data-algo="0">Bat</button>
+                        <button class="algo-toggle-btn" data-algo="1">ABC</button>
+                        <button class="algo-toggle-btn" data-algo="2">Genetyczny</button>
+                        <div class="algo-toggle-indicator"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Funkcja:</label>
+                    <div class="function-dropdown-container">
+                        <button class="function-dropdown-btn" id="functionDropdownBtn">
+                            <span class="function-name">Wybierz funkcję</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="function-dropdown-menu" id="functionDropdownMenu">
+                            <button class="function-option" data-value="rastrigin">Rastrigin</button>
+                            <button class="function-option" data-value="sphere">Sphere</button>
+                            <button class="function-option" data-value="rosenbrock">Rosenbrock</button>
+                            <button class="function-option" data-value="griewank">Griewank</button>
+                            <button class="function-option" data-value="zakharov">Zakharov</button>
+                        </div>
+                    </div>
+                    <div class="function-info" id="functionInfo" style="display: none;">
+                        <div id="functionPlotly" class="function-plotly"></div>
+                        <div class="function-description">
+                            <strong>Rastrigin</strong><br>
+                            Zakres: [-5.12, 5.12]<br>
+                            Minimum globalne: f(0,0) = 0<br>
+                            Charakterystyka: Wysoko multimodalna, dużo lokalnych optimów
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <label>
+                        <span>Liczba Agentów:</span>
+                        <span class="slider-value" id="batCountValue">20</span>
+                    </label>
+                    <input type="range" id="batCount" min="5" max="50" value="20">
+                </div>
+
+                <button class="run-btn" id="runBtn">▶ Uruchom wizualizację</button>
+            </div>
+
+            <div class="simulator-box">
+                <h3>Wykres na żywo</h3>
+                <canvas id="animationCanvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="comparison">
+        <div class="container">
+            <h2>Porównanie Algorytmów</h2>
+            
+            <div class="simulator-box">
+                <h3>Parametry</h3>
+                
+                <div class="form-group">
+                    <label>Funkcja:</label>
+                    <div class="function-dropdown-container">
+                        <button class="function-dropdown-btn" id="comparisonFunctionDropdownBtn">
+                            <span class="function-name">Wybierz funkcję</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="function-dropdown-menu" id="comparisonFunctionDropdownMenu">
+                            <button class="function-option" data-value="rastrigin">Rastrigin</button>
+                            <button class="function-option" data-value="sphere">Sphere</button>
+                            <button class="function-option" data-value="rosenbrock">Rosenbrock</button>
+                            <button class="function-option" data-value="griewank">Griewank</button>
+                            <button class="function-option" data-value="zakharov">Zakharov</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <label>
+                        <span>Liczba Agentów:</span>
+                        <span class="slider-value" id="comparisonBatCountValue">20</span>
+                    </label>
+                    <input type="range" id="comparisonBatCount" min="5" max="50" value="20">
+                </div>
+                <button class="run-btn comparison-btn">Uruchom algorytmy</button>
+            </div>
+            
+            <div class="simulator-box" id="comparisonResults">
+                <div class="comparison-chart">
+                    <div id="comparisonPlotly" class="comparison-plotly"></div>
+                    <div class="comparison-times" id="comparisonTimes">
+                        <div class="time-item">
+                            <span class="algo-name">Algorytm Bat:</span>
+                            <span class="time-value" id="batTime">-</span>
+                        </div>
+                        <div class="time-item">
+                            <span class="algo-name">Algorytm ABC:</span>
+                            <span class="time-value" id="abcTime">-</span>
+                        </div>
+                        <div class="time-item">
+                            <span class="algo-name">Algorytm Genetyczny:</span>
+                            <span class="time-value" id="geneticTime">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comparison-chart">
+                    <div id="convergencePlotly" class="comparison-plotly"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>Kontakt</h2>
+            <div class="contact-grid">
+                <a href="mailto:rd310455@student.polsl.pl" class="contact-card">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Robert Denicki</span>
+                    <small>rd310455@student.polsl.pl</small>
+                </a>
+                <a href="mailto:mail1@idk.com" class="contact-card">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Bartosz Płaniak</span>
+                    <small>mail1@idk.com</small>
+                </a>
+                <a href="mailto:mail2@idk.com" class="contact-card">
+                    <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Grzegorz Brzezina</span>
+                    <small>mail2@idk.com</small>
+                </a>
+            </div>
+            <a href="https://github.com/Bartekp26/Heuristic-algorithms" target="_blank" class="contact-card contact-card-github">
+                <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span>GitHub</span>
+                <small>github.com/Bartekp26</small>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Algorytmy Heurystyczne - Projekt edukacyjny</p>
+        <small>Wersja 1.0.0</small>
+    </footer>
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/algorytm-toggle.js"></script>
+    <script src="/static/js/function-info.js"></script>
+    <script src="/static/js/dropdown-menu.js"></script>
+    <script src="/static/js/comparison.js"></script>
+</body>
+</html>
