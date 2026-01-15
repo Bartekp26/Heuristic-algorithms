@@ -37,29 +37,7 @@ def adjust_pulse_rate(r0, gamma, t):
 # A - loudness
 # r - pulse emission rate
 
-def sphere_function(x):
-    return np.sum(x**2)
-
-def rastrigin_function(x):
-    d = len(x)
-    return 10 * d + np.sum(x**2 - 10 * np.cos(2 * np.pi * x))
-
-def rosenbrock_function(x):
-    return np.sum(100.0 * (x[1:] - x[:-1]**2)**2 + (1 - x[:-1])**2)
-
-def griewank_function(x):
-    n = len(x)
-    sum_part = np.sum(x**2 / 4000.0)
-    prod_part = np.prod(np.cos(x / np.sqrt(np.arange(1, n+1))))
-    return sum_part - prod_part + 1
-
-def zakharov_function(x):
-    n = len(x)
-    sum1 = np.sum(x**2)
-    sum2 = np.sum(0.5 * np.arange(1, n+1) * x)
-    return sum1 + sum2**2 + sum2**4
-
-def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
+def bat_algorithm(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims, target_fitness=None):
     v = np.zeros((n_bats, dims))
     x = initialization_bats(bounds, n_bats, dims)
     f = np.zeros(n_bats)
@@ -71,7 +49,13 @@ def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
     best = x[best_idx].copy()
     best_f = fitness[best_idx]
 
-    history = []
+    convergence_curve = [best_f]
+
+    # Log pozycji agentów (tylko dla dim = 2)
+    positions_log = []
+    if dims == 2:
+        positions_log.append(x.copy())
+
     t = 0
     while t < max_iter:
         a_avg = np.average(A)
@@ -96,23 +80,15 @@ def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
                 best_f = f_new
                 best =x[i].copy()
 
-        history.append(best_f)
+        convergence_curve.append(best_f)
+
+        # Logowanie pozycji
+        if dims == 2:
+            positions_log.append(x.copy())
+
+        # Do pomiaru czasu
+        if target_fitness is not None and best_f < target_fitness:
+            break
+
         t += 1
-        # if t % max(1, max_iter // 10) == 0 or t == 1 or t == max_iter:
-        #     print(f"Iteracja {t}/{max_iter}: najlepsze f(x) = {best_f:.6e}")
-
-    #print("\nNajlepsze znalezione rozwiązanie:", best)
-    #print("Najlepsza wartość funkcji celu:", best_f)
-    return best, best_f, history
-
-# if __name__ == '__main__':
-#     max_iter = 1000
-#     dims = 50
-#     n_bats = 50
-#     alpha = 0.9
-#     gamma = 0.9
-#     bounds = (-15, 15)
-#     f_bounds = (0, 2)
-#     fn = rastrigin_function
-
-#     print(bat_algorithm(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims))
+    return best, best_f, convergence_curve, positions_log

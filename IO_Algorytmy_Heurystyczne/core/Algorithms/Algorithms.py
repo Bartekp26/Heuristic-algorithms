@@ -1,11 +1,13 @@
-from core.Algorithms.ABC import artificial_bee_colony, griewank_function, zakharov_function
+from core.Algorithms.ABC import artificial_bee_colony
 from core.Algorithms.bat import bat_algorithm
-from core.Algorithms.GA import evaluate_ga_runs
+from core.Algorithms.GA import genetic_algorithm
 from core.Parallel_ABC.objective_functions import (
     sphere_function,
     rastrigin_function,
     rosenbrock_function,
-    heavy_monte_carlo
+    heavy_monte_carlo,
+    griewank_function,
+    zakharov_function
 )
 
 
@@ -28,24 +30,23 @@ def get_objective_function(func_name: str):
 
 
 async def run_abc(fn, n_bees):
-    best_solution, best_value, convergence = artificial_bee_colony(
+    best_solution, best_value, convergence, positions_log = artificial_bee_colony(
         n_bees=n_bees,
         dim=10,
         bounds=(-5.12, 5.12),
         max_iter=100,
         objective_func = fn
     )
-    return best_solution, best_value, convergence
+    return best_solution, best_value, convergence, positions_log
 
 async def run_bat(fn, n_bats):
-    best_solution, best_value, convergence = bat_algorithm(
+    best_solution, best_value, convergence, positions_log = bat_algorithm(
         fn, n_bats, bounds=(-5.12, 5.12), alpha=0.9, gamma=0.9, f_bounds=(0, 2), max_iter=100, dims=10
     )
-    return best_solution, best_value, convergence
+    return best_solution, best_value, convergence, positions_log
 
 async def run_ga(fn, n):
-    std_params, std_fit, best_solution, best_value, convergence = evaluate_ga_runs(
-        n_runs=10,
+    best_solution, best_value, convergence, positions_log = genetic_algorithm(
         pop_size=n,
         dim=10,
         bounds=(-5.12, 5.12),
@@ -55,4 +56,4 @@ async def run_ga(fn, n):
         mutation_rate=0.1,
         mutation_scale=0.1
     )
-    return std_params, std_fit, best_solution, best_value, convergence
+    return best_solution, best_value, convergence, positions_log

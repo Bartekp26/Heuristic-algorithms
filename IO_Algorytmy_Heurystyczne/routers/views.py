@@ -17,9 +17,9 @@ async def get_algorithms_data(func_name: str, n: int):
     try:
         objective_func = get_objective_function(func_name)
 
-        abc_solution, abc_value, abc_convergence = await run_abc(objective_func, n)
-        bat_solution, bat_value, bat_convergence = await run_bat(objective_func, n)
-        ga_params, ga_fit, ga_solution, ga_value, ga_convergence = await run_ga(objective_func, n)
+        abc_solution, abc_value, abc_convergence, abc_positions = await run_abc(objective_func, n)
+        bat_solution, bat_value, bat_convergence, bat_positions = await run_bat(objective_func, n)
+        ga_solution, ga_value, ga_convergence, ga_positions = await run_ga(objective_func, n)
 
         return {
             "algorithms": [

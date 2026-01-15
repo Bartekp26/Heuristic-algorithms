@@ -86,12 +86,18 @@ def genetic_algorithm(pop_size: int, dim: int, bounds: Tuple[float, float],
                       elitism_rate: float = 0.1,
                       tournament_size: int = 3,
                       crossover_type: str = 'arithmetic',
-                      mutation_type: str = 'gaussian'):
+                      mutation_type: str = 'gaussian',
+                      target_fitness=None):
     # Inicjalizacja
     population, fitness, best_solution, best_fitness = initialize_population(
         pop_size, dim, bounds, objective_func
     )
     convergence_curve = [best_fitness]
+
+    # Log pozycji agentów
+    positions_log = []
+    if dim == 2:
+        positions_log.append(population.copy())
 
     n_elite = max(1, int(pop_size * elitism_rate))
 
@@ -149,102 +155,11 @@ def genetic_algorithm(pop_size: int, dim: int, bounds: Tuple[float, float],
 
         convergence_curve.append(best_fitness)
 
-    return best_solution, best_fitness, convergence_curve
+        if dim == 2:
+            positions_log.append(population.copy())
 
-# Obliczanie najlepszych wyników
-def evaluate_ga_runs(n_runs,
-                      pop_size: int, dim: int, bounds: Tuple[float, float],
-                      max_generations: int, objective_func: Callable,
-                      crossover_rate: float = 0.8,
-                      mutation_rate: float = 0.1,
-                      mutation_scale: float = 0.1,
-                      elitism_rate: float = 0.1,
-                      tournament_size: int = 3,
-                      crossover_type: str = 'arithmetic',
-                      mutation_type: str = 'gaussian'):
-    all_solutions = []
-    all_fitness = []
+        # Do pomiaru czasu
+        if target_fitness is not None and best_fitness < target_fitness:
+            break
 
-    for _ in range(n_runs):
-        best_solution, best_value, convergence_curve = genetic_algorithm(
-            pop_size, dim, bounds, max_generations, objective_func, crossover_rate, mutation_rate, mutation_scale, elitism_rate, tournament_size, crossover_type, mutation_type
-        )
-        all_solutions.append(best_solution)
-        all_fitness.append(best_value)
-
-    all_solutions = np.array(all_solutions)
-    all_fitness = np.array(all_fitness)
-
-    std_parameters = np.std(all_solutions, axis=0)
-    std_fitness = np.std(all_fitness)
-
-    best_idx = np.argmin(all_fitness)
-    global_best_solution = all_solutions[best_idx]
-    global_best_value = all_fitness[best_idx]
-
-    return std_parameters, std_fitness, global_best_solution, global_best_value, convergence_curve
-
-# Wizualizacja - krzywa zbieżności algorytmu
-def plot_convergence(convergence_curve):
-    plt.figure(figsize=(10, 6))
-    plt.plot(convergence_curve, 'r-', linewidth=2)
-    plt.xlabel('Generacja')
-    plt.ylabel('Najlepsza wartość funkcji celu')
-    plt.title('Krzywa zbieżności algorytmu genetycznego')
-    plt.grid(True, alpha=0.3)
-    plt.yscale('log')
-    plt.show()
-
-
-# Funkcje testowe
-
-# Funkcja Step
-# def step_function(x: np.ndarray) -> float:
-#     return np.sum(np.floor(x + 0.5) ** 2)
-
-# Funkcja Sferyczna
-def sphere_function(x: np.ndarray) -> float:
-    return np.sum(x ** 2)
-
-# Funkcja Rastrigina
-def rastrigin_function(x: np.ndarray, A: float = 10) -> float:
-    n = len(x)
-    return A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x))
-
-# Funkcja Rosenbrocka
-def rosenbrock_function(x: np.ndarray) -> float:
-    return np.sum(100.0 * (x[1:] - x[:-1]**2)**2 + (1 - x[:-1])**2)
-
-# Funkcja Zakharova
-def zakharov_function(x: np.ndarray) -> float:
-    i = np.arange(1, len(x) + 1)
-    term = (np.sum(0.5 * i * x))
-    return np.sum(x**2) + term**2 + term**4
-
-# Funkcja Griewank
-def griewank_function(x: np.ndarray) -> float:
-    i = np.arange(1, len(x) + 1)
-    return 1 + (np.sum(x**2) / 4000.0) - (np.prod(np.cos(x / np.sqrt(i))))
-
-
-# # Wywołanie
-# if __name__ == "__main__":
-#     print("=== Algorytm Genetyczny - Optymalizacja Funkcji ===\n")
-
-#     std_params, std_fit, best_solution, best_value, convergence = evaluate_ga_runs(
-#         n_runs=10,
-#         pop_size=50,
-#         dim=10,
-#         bounds=(-5.12, 5.12),
-#         max_generations=100,
-#         objective_func=sphere_function,
-#         crossover_rate=0.8,
-#         mutation_rate=0.1,
-#         mutation_scale=0.1
-#     )
-
-#     print("Najlepsze rozwiązanie:", "[" + ", ".join(f"{x:.4e}" for x in best_solution) + "]")
-#     print("Odchylenie standardowe parametrów:", "[" + ", ".join(f"{x:.4e}" for x in std_params) + "]")
-#     print("Wartość funkcji:", f"{best_value:.4e}")
-#     print("Odchylenie standardowe wartości funkcji:", f"{std_fit:.4e}")
-    #plot_convergence(convergence)
+    return best_solution, best_fitness, convergence_curve, positions_log

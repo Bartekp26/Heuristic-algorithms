@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable, Tuple, List
 
-
 # Inicjalizacja Populacji
 
 def initialize_population(n_bees: int, dim: int, bounds: Tuple[float, float], objective_func: Callable):
@@ -100,13 +99,18 @@ def scout_bees_phase(food_sources, fitness, trial_counter, bounds, objective_fun
 
 # Główna pętla optymalizacji
 
-def artificial_bee_colony(n_bees, dim, bounds, max_iter, objective_func, limit=None):
+def artificial_bee_colony(n_bees, dim, bounds, max_iter, objective_func, limit=None, target_fitness=None):
     """Główna funkcja optymalizacji ABC."""
     if limit is None:
         limit = n_bees * dim
 
     food_sources, fitness, trial_counter, best_solution, best_fitness = initialize_population(n_bees, dim, bounds, objective_func)
     convergence_curve = [best_fitness]
+
+    # Log pozycji agentów (tylko dla dim = 2)
+    positions_log = []
+    if dim == 2:
+        positions_log.append(food_sources.copy())
 
     for iteration in range(max_iter):
         food_sources, fitness, trial_counter, best_solution, best_fitness = employed_bees_phase(
@@ -121,71 +125,12 @@ def artificial_bee_colony(n_bees, dim, bounds, max_iter, objective_func, limit=N
 
         convergence_curve.append(best_fitness)
 
-    return best_solution, best_fitness, convergence_curve
+        # Logowanie pozycji
+        if dim == 2:
+            positions_log.append(food_sources.copy())
 
-# Wizualizcja - krzywa zbierzna algorytmu
+        # Do pomiaru czasu
+        if target_fitness is not None and best_fitness < target_fitness:
+            break
 
-def plot_convergence(convergence_curve):
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(convergence_curve, 'b-', linewidth=2)
-    plt.xlabel('Iteracja')
-    plt.ylabel('Najlepsza wartość funkcji celu')
-    plt.title('Krzywa zbieżności algorytmu ABC')
-    plt.grid(True, alpha=0.3)
-    plt.yscale('log')
-    plt.show()
-
-
-
-
-
-# Funkcja Sferyczna
-
-def sphere_function(x: np.ndarray) -> float:
-    return np.sum(x ** 2)
-
-# Funkcja Rastrigina
-
-def rastrigin_function(x: np.ndarray, A: float = 10) -> float:
-
-    n = len(x)
-    return A * n + np.sum(x**2 - A * np.cos(2 * np.pi * x))
-
-# Funkcja Rosenbrocka
-
-def rosenbrock_function(x: np.ndarray) -> float:
-
-    return np.sum(100.0 * (x[1:] - x[:-1]**2)**2 + (1 - x[:-1])**2)
-
-# Funkcja Griewanka
-
-def griewank_function(x: np.ndarray) -> float:
-    n = len(x)
-    sum_part = np.sum(x**2 / 4000.0)
-    prod_part = np.prod(np.cos(x / np.sqrt(np.arange(1, n+1))))
-    return sum_part - prod_part + 1
-
-# Funkcja Zakharova
-
-def zakharov_function(x: np.ndarray) -> float:
-    n = len(x)
-    sum1 = np.sum(x**2)
-    sum2 = np.sum(0.5 * np.arange(1, n+1) * x)
-    return sum1 + sum2**2 + sum2**4
-
-
-# # Wywołanie
-
-# if __name__ == "__main__":
-#     best_solution, best_value, convergence = artificial_bee_colony(
-#     n_bees=50,
-#     dim=10,
-#     bounds=(-5.12, 5.12),
-#     max_iter=100,
-#     objective_func = sphere_function
-#     )
-
-#     print("Najlepsze rozwiązanie:", best_solution)
-#     print("Wartość funkcji:", best_value)
-#     plot_convergence(convergence)
+    return best_solution, best_fitness, convergence_curve, positions_log
