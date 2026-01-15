@@ -30,23 +30,23 @@ def get_objective_function(func_name: str):
 
 
 async def run_abc(fn, n_bees):
-    best_solution, best_value, convergence, positions_log = artificial_bee_colony(
+    best_solution, best_value, convergence = artificial_bee_colony(
         n_bees=n_bees,
         dim=10,
         bounds=(-5.12, 5.12),
         max_iter=100,
         objective_func = fn
     )
-    return best_solution, best_value, convergence, positions_log
+    return best_solution, best_value, convergence
 
 async def run_bat(fn, n_bats):
-    best_solution, best_value, convergence, positions_log = bat_algorithm(
+    best_solution, best_value, convergence = bat_algorithm(
         fn, n_bats, bounds=(-5.12, 5.12), alpha=0.9, gamma=0.9, f_bounds=(0, 2), max_iter=100, dims=10
     )
-    return best_solution, best_value, convergence, positions_log
+    return best_solution, best_value, convergence
 
 async def run_ga(fn, n):
-    best_solution, best_value, convergence, positions_log = genetic_algorithm(
+    best_solution, best_value, convergence = genetic_algorithm(
         pop_size=n,
         dim=10,
         bounds=(-5.12, 5.12),
@@ -56,4 +56,4 @@ async def run_ga(fn, n):
         mutation_rate=0.1,
         mutation_scale=0.1
     )
-    return best_solution, best_value, convergence, positions_log
+    return best_solution, best_value, convergence

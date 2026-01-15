@@ -51,6 +51,52 @@ def bat_algorithm(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims, ta
 
     convergence_curve = [best_f]
 
+    t = 0
+    while t < max_iter:
+        a_avg = np.average(A)
+        r_new = np.zeros(n_bats)
+        for i in range(n_bats):
+            r_new[i] = adjust_pulse_rate(r0[i], gamma, t)
+            A[i] = adjust_loudness(A[i], alpha)
+
+            x[i], v[i], f[i] = update_position_frequency_velocity(x[i], v[i], best, f_bounds, a_avg, r_new[i])
+
+            x[i] = np.clip(x[i], bounds[0], bounds[1])
+
+            f_new = fn(x[i])
+
+            if np.random.rand() < A[i] and f_new < fitness[i]:
+                fitness[i] = f_new
+                A[i] = adjust_loudness(A[i], alpha)
+                r_new[i] = adjust_pulse_rate(r0[i], gamma, t)
+
+
+            if f_new < best_f:
+                best_f = f_new
+                best =x[i].copy()
+
+        convergence_curve.append(best_f)
+
+        # Do pomiaru czasu
+        if target_fitness is not None and best_f < target_fitness:
+            break
+
+        t += 1
+    return best, best_f, convergence_curve
+
+
+def bat_algorithm_positions(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
+    v = np.zeros((n_bats, dims))
+    x = initialization_bats(bounds, n_bats, dims)
+    f = np.zeros(n_bats)
+    A = np.full(n_bats, 1.5)
+    r0 = np.full(n_bats, 0.5)
+
+    fitness = np.array([fn(xi) for xi in x])
+    best_idx = np.argmin(fitness)
+    best = x[best_idx].copy()
+    best_f = fitness[best_idx]
+
     # Log pozycji agentów (tylko dla dim = 2)
     positions_log = []
     if dims == 2:
@@ -80,15 +126,9 @@ def bat_algorithm(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims, ta
                 best_f = f_new
                 best =x[i].copy()
 
-        convergence_curve.append(best_f)
-
         # Logowanie pozycji
         if dims == 2:
             positions_log.append(x.copy())
 
-        # Do pomiaru czasu
-        if target_fitness is not None and best_f < target_fitness:
-            break
-
         t += 1
-    return best, best_f, convergence_curve, positions_log
+    return positions_log

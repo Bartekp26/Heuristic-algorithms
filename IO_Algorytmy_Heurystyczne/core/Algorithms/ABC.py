@@ -107,6 +107,33 @@ def artificial_bee_colony(n_bees, dim, bounds, max_iter, objective_func, limit=N
     food_sources, fitness, trial_counter, best_solution, best_fitness = initialize_population(n_bees, dim, bounds, objective_func)
     convergence_curve = [best_fitness]
 
+    for iteration in range(max_iter):
+        food_sources, fitness, trial_counter, best_solution, best_fitness = employed_bees_phase(
+            food_sources, fitness, trial_counter, best_solution, best_fitness, bounds, objective_func
+        )
+        food_sources, fitness, trial_counter, best_solution, best_fitness = onlooker_bees_phase(
+            food_sources, fitness, trial_counter, best_solution, best_fitness, bounds, objective_func
+        )
+        food_sources, fitness, trial_counter = scout_bees_phase(
+            food_sources, fitness, trial_counter, bounds, objective_func, limit
+        )
+
+        convergence_curve.append(best_fitness)
+
+        # Do pomiaru czasu
+        if target_fitness is not None and best_fitness < target_fitness:
+            break
+
+    return best_solution, best_fitness, convergence_curve
+
+
+def artificial_bee_colony_positions(n_bees, dim, bounds, max_iter, objective_func, limit=None, target_fitness=None):
+    """Główna funkcja optymalizacji ABC."""
+    if limit is None:
+        limit = n_bees * dim
+
+    food_sources, fitness, trial_counter, best_solution, best_fitness = initialize_population(n_bees, dim, bounds, objective_func)
+
     # Log pozycji agentów (tylko dla dim = 2)
     positions_log = []
     if dim == 2:
@@ -123,14 +150,8 @@ def artificial_bee_colony(n_bees, dim, bounds, max_iter, objective_func, limit=N
             food_sources, fitness, trial_counter, bounds, objective_func, limit
         )
 
-        convergence_curve.append(best_fitness)
-
         # Logowanie pozycji
         if dim == 2:
             positions_log.append(food_sources.copy())
 
-        # Do pomiaru czasu
-        if target_fitness is not None and best_fitness < target_fitness:
-            break
-
-    return best_solution, best_fitness, convergence_curve, positions_log
+    return positions_log
