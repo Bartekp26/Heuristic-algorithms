@@ -629,3 +629,39 @@ footer {
     color: var(--text-muted);
     margin-top: -1rem;
 }
+
+/* Styles for parallel section */
+#parallel {
+    background: var(--secondary-dark);
+}
+
+#parallel .simulator-box p {
+    margin-bottom: 1.5rem;
+}
+
+#parallel .simulator-box h4 {
+    color: var(--purple);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+}
+
+#parallel .simulator-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+#parallel .simulator-box li {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+#parallel .simulator-box li::before {
+    content: "•";
+    color: var(--purple);
+    font-size: 1.5rem;
+    position: absolute;
+    left: 0;
+    top: -0.1rem;
+}

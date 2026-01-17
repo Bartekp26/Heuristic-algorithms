@@ -16,6 +16,7 @@
                 <a href="#algorithms">Algorytmy</a>
                 <a href="#simulator">Wizualizacja</a>
                 <a href="#comparison">Porównanie</a>
+                <a href="#parallel">Zrównoleglenie</a>
                 <a href="#contact">Kontakt</a>
             </div>
         </div>
@@ -175,6 +176,55 @@
         </div>
     </section>
 
+
+    <section id="parallel">
+        <div class="container">
+            <h2>Zrównoleglenie Algorytmu ABC</h2>
+
+            <div class="simulator-box">
+                <h3>Wprowadzenie</h3>
+                <p>W celu przyspieszenia obliczeń algorytm Artificial Bee Colony został rozszerzony o przetwarzanie równoległe, wykorzystujące architekturę wieloprocesową. Zrównoleglono te fragmenty algorytmu, które są niezależne obliczeniowo, czyli takie, w których każda pszczoła może wykonywać swoje działania bez konieczności synchronizacji z innymi.</p>
+            </div>
+
+            <div class="simulator-box">
+                <h3>Architektura Zrównoleglenia</h3>
+
+                <h4>1. Faza Employed Bees (Pszczoły Pracujące)</h4>
+                <p>Każda pszczoła pracująca przetwarza swoje źródło pożywienia niezależnie w osobnym procesie. Funkcja <code>employed_worker</code> generuje nowe rozwiązanie poprzez perturbację aktualnej pozycji i porównanie z losowo wybraną inną pszczołą. Wyniki są zbierane i scalane, aktualizując populację oraz globalne najlepsze rozwiązanie.</p>
+
+                <h4>2. Faza Onlooker Bees (Pszczoły Obserwujące)</h4>
+                <p>Pszczoły obserwujące wybierają źródła pożywienia za pomocą selekcji ruletkowej opartej na wartościach fitness. Każda pszczoła działa w osobnym procesie, wykonując funkcję <code>onlooker_worker</code>, która wybiera źródło, generuje nowe rozwiązanie i ocenia jego jakość.</p>
+
+                <h4>3. Faza Scout Bees (Pszczoły Zwiadowcze)</h4>
+                <p>Ta faza pozostaje sekwencyjna, ponieważ wymaga globalnej synchronizacji do znalezienia źródła z maksymalnym licznikiem prób i ewentualnego jego zastąpienia.</p>
+            </div>
+
+            <div class="simulator-box">
+                <h3>Porównanie czasowe z sekwencyjnymi algorytmami</h3>
+                <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Funkcja testowa</th>
+                                <th>Algorytm ABC</th>
+                                <th>Algorytm BAT</th>
+                                <th>Algorytm Genetyczny</th>
+                                <th>ABC Zrównoleglony</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="function-badge">Heavy Monte Carlo</span></td>
+                                <td class="metric-pink">20min 13s</td>
+                                <td class="metric-muted">6min 2s</td>
+                                <td class="metric-muted">6min 42s</td>
+                                <td class="metric-green">5min 42s</td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </section>
+
     <section id="contact">
         <div class="container">
             <h2>Kontakt</h2>
@@ -186,12 +236,12 @@
                     <span>Robert Denicki</span>
                     <small>rd310455@student.polsl.pl</small>
                 </a>
-                <a href="mailto:mail1@idk.com" class="contact-card">
+                <a href="mailto:bp312416@student.polsl.pl" class="contact-card">
                     <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                     </svg>
                     <span>Bartosz Płaniak</span>
-                    <small>mail1@idk.com</small>
+                    <small>bp312416@student.polsl.pl</small>
                 </a>
                 <a href="mailto:mail2@idk.com" class="contact-card">
                     <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
