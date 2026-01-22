@@ -5,8 +5,6 @@ from typing import Tuple, Callable
 from concurrent.futures import ProcessPoolExecutor
 
 from abc_workers import employed_worker, onlooker_worker
-from objective_functions import sphere_function
-
 
 def initialize_population(
     n_bees: int,
@@ -132,22 +130,3 @@ def artificial_bee_colony_parallel(n_bees, dim, bounds, max_iter, objective_func
         convergence_curve.append(best_fitness)
 
     return best_solution, best_fitness, convergence_curve
-
-
-if __name__ == "__main__":
-
-    n_bees = 50
-    dim = 10
-    bounds = (-5.0, 5.0)
-    max_iter = 1000
-
-    best_solution, best_fitness, convergence = artificial_bee_colony_parallel(
-        n_bees=n_bees,
-        dim=dim,
-        bounds=bounds,
-        max_iter=max_iter,
-        objective_func = sphere_function
-    )
-
-    print("Best fitness:", best_fitness)
-    print("Best solution:", best_solution)

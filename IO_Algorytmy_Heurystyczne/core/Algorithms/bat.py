@@ -1,9 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from typing import Callable, Tuple, List
-
-
-
 
 def initialization_bats(bounds, n_bats, dims):
     x = np.zeros((n_bats, dims))
@@ -13,8 +8,8 @@ def initialization_bats(bounds, n_bats, dims):
     return x
 
 
-
-
+# f = frequency
+# V = velocity
 
 def update_position_frequency_velocity(xi, vi, best, f_bounds, A_avg, ri):
     f_min, f_max = f_bounds
@@ -32,20 +27,17 @@ def update_position_frequency_velocity(xi, vi, best, f_bounds, A_avg, ri):
     return xi, vi, f
 
 
-
-
-
 def adjust_loudness(A, alpha):
     return A * alpha
 
 def adjust_pulse_rate(r0, gamma, t):
     return  r0 * (1 - np.exp(-gamma * t))
 
+# x = bats
+# A - loudness
+# r - pulse emission rate
 
-
-
-
-def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
+def bat_algorithm(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims, target_fitness=None):
     v = np.zeros((n_bats, dims))
     x = initialization_bats(bounds, n_bats, dims)
     f = np.zeros(n_bats)
@@ -59,7 +51,6 @@ def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
 
     convergence_curve = [best_f]
 
-    history = []
     t = 0
     while t < max_iter:
         a_avg = np.average(A)
@@ -84,25 +75,17 @@ def bat_algorithm(fn,n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
                 best_f = f_new
                 best =x[i].copy()
 
-        history.append(best_f)
-        t += 1
-        
         convergence_curve.append(best_f)
 
+        # Do pomiaru czasu
+        if target_fitness is not None and best_f < target_fitness:
+            break
+
+        t += 1
     return best, best_f, convergence_curve
 
 
-
-
-
-
-def bat_algorithm_position(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims,
-                  save_every: int = 1):
-    """
-    Bat Algorithm z logowaniem pozycji (dla dims = 2).
-    """
-
-    # Inicjalizacja
+def bat_algorithm_positions(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter, dims):
     v = np.zeros((n_bats, dims))
     x = initialization_bats(bounds, n_bats, dims)
     f = np.zeros(n_bats)
@@ -114,57 +97,38 @@ def bat_algorithm_position(fn, n_bats, bounds, alpha, gamma, f_bounds, max_iter,
     best = x[best_idx].copy()
     best_f = fitness[best_idx]
 
-    convergence_curve = [best_f]
-
-    # Log pozycji
+    # Log pozycji agentów (tylko dla dim = 2)
     positions_log = []
     if dims == 2:
         positions_log.append(x.copy())
 
     t = 0
     while t < max_iter:
-
         a_avg = np.average(A)
         r_new = np.zeros(n_bats)
-
         for i in range(n_bats):
-
-            # Aktualizacja parametrów
             r_new[i] = adjust_pulse_rate(r0[i], gamma, t)
             A[i] = adjust_loudness(A[i], alpha)
 
-            # Aktualizacja pozycji, prędkości i częstotliwości
-            x[i], v[i], f[i] = update_position_frequency_velocity(
-                x[i], v[i], best, f_bounds, a_avg, r_new[i]
-            )
+            x[i], v[i], f[i] = update_position_frequency_velocity(x[i], v[i], best, f_bounds, a_avg, r_new[i])
 
-            # Ograniczenia
             x[i] = np.clip(x[i], bounds[0], bounds[1])
 
-            # Nowy fitness
             f_new = fn(x[i])
 
-            # Akceptacja nowego rozwiązania
             if np.random.rand() < A[i] and f_new < fitness[i]:
                 fitness[i] = f_new
                 A[i] = adjust_loudness(A[i], alpha)
                 r_new[i] = adjust_pulse_rate(r0[i], gamma, t)
 
-            # Aktualizacja najlepszego
+
             if f_new < best_f:
                 best_f = f_new
-                best = x[i].copy()
+                best =x[i].copy()
 
-        convergence_curve.append(best_f)
-
-        # Logowanie pozycji co save_every iteracji
-        if dims == 2 and (t + 1) % save_every == 0:
+        # Logowanie pozycji
+        if dims == 2:
             positions_log.append(x.copy())
 
         t += 1
-
-    return best, best_f, convergence_curve, positions_log
-
-
-
-
+    return positions_log
